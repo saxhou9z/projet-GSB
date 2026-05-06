@@ -39,8 +39,8 @@ Dans le cadre de la modernisation de l'activité de visite médicale de GSB, cet
 
 ```bash
 # 1. Cloner le dépôt
-git clone https://github.com/saxhou9z/projet-perso.git
-cd projet-perso
+git clone https://github.com/saxhou9z/projet-GSB.git
+cd projet-GSB
 
 # 2. Lancer l'application
 docker compose up -d
