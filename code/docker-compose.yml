@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: visiteur_medical_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: visiteur_medical
+      MYSQL_USER: visiteur
+      MYSQL_PASSWORD: visiteur123
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - visiteur_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: visiteur_medical_phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: visiteur
+      PMA_PASSWORD: visiteur123
+    depends_on:
+      - db
+    networks:
+      - visiteur_network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: visiteur_medical_web
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - visiteur_network
+
+volumes:
+  db_data:
+
+networks:
+  visiteur_network:
+    driver: bridge
